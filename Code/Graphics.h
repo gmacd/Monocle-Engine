@@ -86,6 +86,7 @@ namespace Monocle
 		static void SetBlend(BlendType blend);
 		static void SetColor(const Color &color);
 		static void SetBackgroundColor(const Color &color);
+        static void EnableBackgroundReset( bool bgReset = true );
 
 		static Color GetBackgroundColor();
 		//static void SceneMatrix();
@@ -118,6 +119,8 @@ namespace Monocle
 		int virtualWidth, virtualHeight;
 		unsigned int lastBoundTextureID;
 		BlendType currentBlend;
+        
+        bool bgReset;
 	};
 
 }
