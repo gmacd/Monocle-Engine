@@ -62,7 +62,7 @@ namespace LevelEditorTest
 		Level::LoadProject("project.xml");
 		
 		// load the actual level
-		Level::Load("level.xml", this);
+		Level::LoadScene("level.xml", this);
 
 		// create the player
 		Player *player = new Player();
