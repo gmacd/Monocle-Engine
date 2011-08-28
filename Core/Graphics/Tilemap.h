@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "../Graphics.h"
 #include "../Tileset.h"
 #include "../TextureAsset.h"
 #include "../Vector2.h"
-#include <vector>
 
 namespace Monocle
 {

@@ -21,27 +21,33 @@ namespace Monocle
 	class PathCollider;
 	class Entity;
 	class CollisionData;
+	class FileNode;
 
 	class Collider
 	{
 	public:
-		Collider();
-
+		Collider(ColliderType type);
+        
 		void SetEntity(Entity* entity);
 		Entity* GetEntity();
 		Vector2 GetEntityPosition();
 
 		Vector2 offset;
 
-		virtual ColliderType GetColliderType() = 0;
+		ColliderType GetColliderType() const { return type; }
 		virtual bool IntersectsPoint(const Vector2& point, CollisionData *collisionData=NULL)=0;
 		virtual bool IntersectsLine(const Vector2& start, const Vector2& end, float lineRadius = 0.0f, CollisionData *collisionData=NULL)=0;
 
 		static bool Collide(Collider* a, Collider* b, CollisionData *collisionData = NULL);
 		static bool LinesIntersect(const Vector2& aStart, const Vector2& aEnd, const Vector2& bStart, const Vector2& bEnd, CollisionData *collisionData=NULL);
 
+        // Factory method
+        static Collider* Create(FileNode* node);
+        
 	private:
+        ColliderType type;
 		Entity *entity;
+        
 		static bool CollideRectRect(RectangleCollider* a, RectangleCollider* b, CollisionData *collisionData);
 		static bool CollideCircleCircle(CircleCollider* a, CircleCollider* b, CollisionData *collisionData);
 		static bool CollidePolygonPolygon(PolygonCollider* a, PolygonCollider* b, CollisionData *collisionData);

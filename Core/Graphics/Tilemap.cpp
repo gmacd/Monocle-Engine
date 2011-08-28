@@ -8,6 +8,7 @@ namespace Monocle
 {
 	int Tilemap::selectedTile = 0;
 
+    
 	Tilemap::Tilemap(Tileset *tileset, int width, int height, int tileWidth, int tileHeight)
 		: Graphic(), width(0), height(0), tileWidth(tileWidth), tileHeight(tileHeight)
 	{
@@ -17,17 +18,9 @@ namespace Monocle
 		Clear();
 
 		this->selectedTile = 0;
-
-		/// TEST:
-		for (int y = 0; y < height/tileHeight; y++)
-		{
-			for (int x = 0; x < width/tileWidth; x++)
-			{
-				SetTile(x, y, (y*16) + x);
-			}
-		}
 	}
 
+    
 	void Tilemap::Resize(int width, int height)
 	{
 		std::vector<int> newTiles = std::vector<int>(width*height);

@@ -42,21 +42,24 @@ namespace Monocle
 
 		static void SetScene(Scene *scene);
 		static void LoadProject(const std::string &filename);
-		static void Load(const std::string &filename, Scene* scene=NULL);
+		static void LoadScene(const std::string &filename, Scene* scene=NULL);
 		static void Save();
 		static void SaveAs(const std::string &filename);
 		static void End(); // called on scene end
 
 		static FringeTileset* GetCurrentFringeTileset();
+		static Tileset* GetCurrentTileset() { return instance->currentTileset; }
+        
+		static const FontAsset* GetFont(const std::string &name);
 
 		std::string name;
 
 		std::list<Tilemap*> tilemaps;
-		std::list<Tileset> tilesets;
-
+		std::list<Tileset*> tilesets;
 		std::list<FringeTileset> fringeTilesets;
-
+        
 		int width, height;
+        
 
 		template <class T> static void SaveEntitiesOfType(const std::string &name, TiXmlElement *element, Entity *fromEntity=NULL)
 		{
@@ -122,12 +125,15 @@ namespace Monocle
 		std::string filename;
 
 		FringeTileset *fringeTileset;
+        Tileset* currentTileset;
 
 		std::list<EntityType> entityTypes;
+        
+        typedef std::map<std::string, const FontAsset*> FontMapType;
+        FontMapType fonts;
+        
 
 		void SaveEntities(TiXmlElement *element, Entity *fromEntity=NULL);
 		void LoadEntities(TiXmlElement *element, Entity *intoEntity=NULL);
-
-
 	};
 }

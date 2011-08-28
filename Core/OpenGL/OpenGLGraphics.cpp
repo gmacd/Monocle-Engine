@@ -32,7 +32,7 @@ namespace Monocle
         currentBlend = BLEND_NONE;
 	}
 
-	void Graphics::Init()
+	void Graphics::Init(int w, int h)
 	{
 		Debug::Log("Graphics::Init");
 		
@@ -61,7 +61,7 @@ namespace Monocle
         currentColor = Color::white;
         glColor4f(1.0,1.0,1.0,1.0);
 
-		Set2D(800,600);
+		Set2D(w, h);
 
 		//cameraPosition = screenCenter;
 		//cameraZoom = Vector2::one;
@@ -396,7 +396,7 @@ namespace Monocle
         for (int i = 0; i < text.size(); i++)
         {
             char c = text[i];
-			if ((c >= 32) && (c < 128))
+			if (c >= 32)
 			{
 				font.GetGlyphData(c, &x, &y, verts, texCoords);
 
@@ -481,7 +481,7 @@ namespace Monocle
 		}
 	}
     
-    void Graphics::BindFont(FontAsset* fontAsset)
+    void Graphics::BindFont(const FontAsset* fontAsset)
 	{
 		if (fontAsset != NULL)
 		{

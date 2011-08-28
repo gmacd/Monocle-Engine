@@ -4,19 +4,15 @@
 namespace Monocle
 {
 	PathCollider::PathCollider()
-		: Collider(), startNode(NULL), radius(0.0f)
+		: Collider(CT_PATH), startNode(NULL), radius(0.0f)
 	{
 	}
 
 	PathCollider::PathCollider(Node *node, float radius)
-		: Collider(), startNode(node), radius(radius)
+		: Collider(CT_PATH), startNode(node), radius(radius)
 	{
 	}
 
-	ColliderType PathCollider::GetColliderType()
-	{
-		return CT_PATH;
-	}
 
 	bool PathCollider::IntersectsPoint(const Vector2& point, CollisionData *collisionData)
 	{

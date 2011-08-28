@@ -16,12 +16,15 @@ namespace Monocle
 	public:
 		Sprite(const std::string &filename, float width=-1.0, float height=-1.0);
 		Sprite(const std::string &filename, FilterType filter, float width=-1.0, float height=-1.0);
+        Sprite(FileNode* node);
         
         Sprite(ZwopSprite *zwopSprite, float width=-1.0, float height=-1.0);
         Sprite(ZwopSprite *zwopSprite, FilterType filter, float width=-1.0, float height=-1.0);
         
 		Sprite();
 		~Sprite();
+        
+        void Init();
 		void Update();
 		void Render(Entity *entity);
 		void GetWidthHeight(float *width, float *height);

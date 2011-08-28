@@ -81,7 +81,7 @@ namespace Monocle
 		//! to render a quad with the first texture will not produce expected results.  A NULL 
 		//! pointer parameter unbinds the current texture and future render calls will not use a 
 		//! texture.
-        static void BindFont(FontAsset* fontAsset);
+        static void BindFont(const FontAsset* fontAsset);
 
 		//! Returns the ratios between real and virtual widths and heights.
 		static const Vector2 &GetResolutionScale();
@@ -204,7 +204,7 @@ namespace Monocle
 	protected:
 		friend class Game;
 		Graphics();
-		void Init();
+		void Init(int w, int h);
 
 		void BeginFrame();
 		void EndFrame();

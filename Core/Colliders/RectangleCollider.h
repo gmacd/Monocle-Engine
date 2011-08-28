@@ -6,14 +6,19 @@
 
 namespace Monocle
 {
+    class FileNode;
+    
+    
 	// Axis-Aligned Bounding Box
 	class RectangleCollider : public Collider
 	{
 	public:
 		float width;
 		float height;
+        
 		RectangleCollider(float width, float height, Vector2 offset=Vector2::zero);
-		ColliderType GetColliderType();
+        RectangleCollider(FileNode* node);
+        
 		bool IntersectsPoint(const Vector2& point, CollisionData *collisionData = NULL);
 		bool IntersectsLine(const Vector2& start, const Vector2& end, float lineRadius = 0.0f, CollisionData *collisionData=NULL);
 

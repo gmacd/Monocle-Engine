@@ -1,19 +1,22 @@
 #include "Collider.h"
+
+#include <stdio.h> // for NULL
+
 #include "RectangleCollider.h"
 #include "CircleCollider.h"
 #include "PolygonCollider.h"
 #include "PathCollider.h"
 #include "../Entity.h"
-#include <stdio.h> // for NULL
 #include "../CollisionData.h"
 #include "../Macros.h"
 
 namespace Monocle
 {
-	Collider::Collider()
-		: entity(NULL)
+	Collider::Collider(ColliderType type)
+		: type(type), entity(NULL)
 	{
 	}
+    
 
 	void Collider::SetEntity(Entity* entity)
 	{
@@ -358,4 +361,19 @@ namespace Monocle
 
 		return false;
 	}
+    
+    
+    // Factory method to create colldiers from filenodes
+    Collider* Collider::Create(FileNode* node)
+    {
+        std::string type;
+        node->Read("type", type);
+        
+        if (type == "rectangle")
+        {
+            return new RectangleCollider(node);
+        }
+        
+        return NULL;        
+    }
 }

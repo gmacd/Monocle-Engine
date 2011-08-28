@@ -1,9 +1,12 @@
 #include "Level.h"
-#include "Assets.h"
-#include <TinyXML/tinyxml.h>
-#include "XML/XMLFileNode.h"
+
 #include <iostream>
 #include <fstream>
+
+#include <TinyXML/tinyxml.h>
+
+#include "Assets.h"
+#include "XML/XMLFileNode.h"
 #include "Entity.h"
 #include "LevelEditor/Node.h"
 #include "LevelEditor/PathMesh.h"
@@ -30,7 +33,7 @@ namespace Monocle
 	Level *Level::instance = NULL;
 
 	Level::Level()
-		: scene(NULL), fringeTileset(NULL)
+		: scene(NULL), fringeTileset(NULL), currentTileset(NULL)
 	{
 		instance = this;
 		width = height = 0;
@@ -47,7 +50,9 @@ namespace Monocle
 
 	void Level::LoadProject(const std::string &filename)
 	{
-		Debug::Log("Loading Level...");
+		Debug::Log("Loading Project...");
+		Debug::Log(filename);
+        
 		// load the project data from an xml file
 		instance->tilesets.clear();
 		///TODO: clear fringeTileset
@@ -83,7 +88,8 @@ namespace Monocle
 					TiXmlElement* eTileset = eTilesets->FirstChildElement("Tileset");
 					while (eTileset)
 					{
-						instance->tilesets.push_back(Tileset(XMLReadString(eTileset, "name"), XMLReadString(eTileset, "image"), XMLReadInt(eTileset, "tileWidth"), XMLReadInt(eTileset, "tileHeight")));
+						instance->tilesets.push_back(new Tileset(XMLReadString(eTileset, "name"), XMLReadString(eTileset, "image"), XMLReadInt(eTileset, "tileWidth"), XMLReadInt(eTileset, "tileHeight")));
+                        instance->currentTileset = instance->tilesets.back();
 
 						eTileset = eTilesets->NextSiblingElement("Tileset");
 					}
@@ -140,14 +146,39 @@ namespace Monocle
 						eFringeTileset = eFringeTileset->NextSiblingElement("FringeTileset");
 					}
 				}
+                
+                // Fonts
+				TiXmlElement* eFonts = eProject->FirstChildElement("Fonts");
+				if (eFonts)
+                {
+					TiXmlElement* eFont = eFonts->FirstChildElement("Font");
+					while (eFont)
+					{
+                        std::string name = XMLReadString(eFont, "name");
+                        std::string filename = XMLReadString(eFont, "filename");
+                        float size = XMLReadFloat(eFont, "size");
+                        
+                        FontAsset* font = Assets::RequestFont(filename, size);
+                        if (font)
+                            instance->fonts.insert(make_pair(name, font));
+                        
+						eFont = eTilesets->NextSiblingElement("Font");
+					}
+                }
 			}
+            Debug::Log("...done");
 		}
-		Debug::Log("...done");
+        else
+        {
+            Debug::Log("...failed to load project");
+        }
 	}
 
-	void Level::Load(const std::string &filename, Scene* scene)
+	void Level::LoadScene(const std::string &filename, Scene* scene)
 	{
 		// load from an xml file, into the scene
+		Debug::Log("Loading Scene...");
+		Debug::Log(filename);
 
 		if (scene != NULL)
 		{
@@ -163,7 +194,6 @@ namespace Monocle
 			TiXmlDocument xml(Assets::GetContentPath() + filename);
 			instance->filename = filename;
 			bool isLoaded = xml.LoadFile();
-
 			if (isLoaded)
 			{
 				TiXmlElement* eLevel = xml.FirstChildElement("Level");
@@ -178,11 +208,9 @@ namespace Monocle
 						instance->fringeTileset = instance->GetFringeTilesetByName(fringeTilesetName);
 					}
 
-					/*
 					Color backgroundColor = Color::black;
 					XMLReadColor(eLevel, "backgroundColor", &backgroundColor);
 					Graphics::SetBackgroundColor(backgroundColor);
-					*/
 
 					XMLFileNode xmlFileNode(eLevel);
 					instance->scene->LoadLevel(&xmlFileNode);
@@ -190,7 +218,6 @@ namespace Monocle
 					TiXmlElement *eTilemap = eLevel->FirstChildElement("Tilemap");
 					while (eTilemap)
 					{
-						
 						Tilemap *tilemap = new Tilemap(instance->GetTilesetByName(XMLReadString(eTilemap, "set")), instance->width, instance->height, XMLReadInt(eTilemap, "tileWidth"), XMLReadInt(eTilemap, "tileHeight"));
 						instance->tilemaps.push_back(tilemap);
 						Entity *entity = new Entity();
@@ -216,68 +243,16 @@ namespace Monocle
 
 					instance->scene->ResolveEntityChanges();
 				}
-			}
+                
+                Debug::Log("...done");
+            }
+            else
+            {
+                Debug::Log("...failed to load scene");
+            }
 		}
 	}
 
-
-	/*
-	template <class T>
-	void Level::SaveEntitiesOfType(const std::string &name, TiXmlElement *element, Entity *fromEntity)
-	{
-		XMLFileNode xmlFileNode;
-
-		const std::list<Entity*> *entities;
-		if (fromEntity)
-			entities = fromEntity->GetChildren();
-		else
-			entities = instance->scene->GetEntities();
-
-		for (std::list<Entity*>::const_iterator i = entities->begin(); i != entities->end(); ++i)
-		{
-			Entity *entity = *i;
-			T *t = dynamic_cast<T*>(entity);
-			if (t)
-			{
-				TiXmlElement saveElement(name);
-				xmlFileNode.element = &saveElement;
-
-				instance->SaveEntities(&saveElement, entity);
-
-				entity->Save(&xmlFileNode);
-
-				element->InsertEndChild(saveElement);
-			}
-
-		}
-	}
-	*/
-
-	/*
-	template <class T>
-	void Level::LoadEntitiesOfType(const std::string &name, TiXmlElement *element, Entity *intoEntity)
-	{
-		XMLFileNode xmlFileNode;
-
-		TiXmlElement *eEntity = element->FirstChildElement(name);
-		while (eEntity)
-		{
-			T *t = new T();
-			Entity *entity = dynamic_cast<Entity*>(t);
-			if (intoEntity == NULL)
-				instance->scene->Add(entity);
-			else
-				intoEntity->Add(entity);
-
-			instance->LoadEntities(eEntity, entity);
-
-			xmlFileNode.element = eEntity;
-			entity->Load(&xmlFileNode);
-
-			eEntity = eEntity->NextSiblingElement(name);
-		}
-	}
-	*/
 
 	void Level::SaveEntities(TiXmlElement *element, Entity *fromEntity)
 	{
@@ -296,13 +271,20 @@ namespace Monocle
 		}
 	}
 
+    const FontAsset* Level::GetFont(const std::string &name)
+    {
+        FontMapType::const_iterator iter = instance->fonts.find(name);
+        if (iter != instance->fonts.end())
+            return (*iter).second;
+        return NULL;
+    }
 
 	Tileset *Level::GetTilesetByName(const std::string &name)
 	{
-		for (std::list<Tileset>::iterator i = tilesets.begin(); i != tilesets.end(); ++i)
+		for (std::list<Tileset*>::iterator i = tilesets.begin(); i != tilesets.end(); ++i)
 		{
-			if ((*i).name == name)
-				return &(*i);
+			if ((*i)->name == name)
+				return (*i);
 		}
 		Debug::Log("Error: Could not find tileset with name: " + name);
 		return NULL;

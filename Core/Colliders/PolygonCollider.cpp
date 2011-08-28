@@ -3,14 +3,11 @@
 namespace Monocle
 {
 	PolygonCollider::PolygonCollider(Vector2 offset)
+        : Collider(CT_POLYGON)
 	{
 		this->offset = offset;
 	}
 
-	ColliderType PolygonCollider::GetColliderType()
-	{
-		return CT_POLYGON;
-	}
 
 	bool PolygonCollider::IntersectsPoint(const Vector2& point)
 	{

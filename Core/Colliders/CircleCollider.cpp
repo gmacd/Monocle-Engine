@@ -5,16 +5,12 @@
 namespace Monocle
 {
 	CircleCollider::CircleCollider(float radius, Vector2 offset)
-		: Collider()
+		: Collider(CT_CIRCLE)
 	{
 		this->offset	= offset;
 		this->radius	= radius;
 	}
 
-	ColliderType CircleCollider::GetColliderType()
-	{
-		return CT_CIRCLE;
-	}
 
 	float CircleCollider::GetRadius()
 	{

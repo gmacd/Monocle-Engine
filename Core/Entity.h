@@ -76,6 +76,7 @@ namespace Monocle
 		virtual void Enable();
 		//! Disable this object. Set isEnabled to false. Each derived Entity may decide how to handle isEnabled.
 		virtual void Disable();
+        void ToggleEnabled();
 		//! \return isEnabled Is this Entity enabled?
 		bool IsEnabled();
 
@@ -133,6 +134,9 @@ namespace Monocle
 
 		//! is our layer number in the debug render range?
 		bool IsDebugLayer();
+        
+        void AddChild(Entity* entity);
+        void RemoveChild(Entity* entity);
 
 		void SetCollider(Collider *collider);
 		void SetGraphic(Graphic *graphic);
@@ -174,7 +178,9 @@ namespace Monocle
 	private:
 		int id;
 
-		Entity *parent;
+		Entity* parent;
+        typedef std::vector<Entity*> ChildrenType;
+        ChildrenType children;
 
 		// only for use by Collision class
 		friend class Collision;
@@ -197,6 +203,7 @@ namespace Monocle
 
         Vector2 cachedWorldPosition;
         Vector2 lastPositionWhenCached;
+        
 	public:
 		//Entity* GetChildEntityAtPosition(const Vector2 &position);
 		//template <class T>

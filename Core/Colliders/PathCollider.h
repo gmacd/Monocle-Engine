@@ -10,7 +10,7 @@ namespace Monocle
 	public:
 		PathCollider();
 		PathCollider(Node *node, float radius);
-		ColliderType GetColliderType();
+        
 		bool IntersectsPoint(const Vector2& point, CollisionData *collisionData = NULL);
 		bool IntersectsLine(const Vector2& start, const Vector2& end, float lineRadius = 1.0f, CollisionData *collisionData = NULL);
 

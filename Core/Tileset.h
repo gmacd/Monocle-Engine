@@ -9,6 +9,8 @@ namespace Monocle
 	{
 	public:
 		Tileset(const std::string &name, const std::string &filename, float tileWidth, float tileHeight);
+        
+        void RenderTile(int tileID, const Vector2& position);
 		
 		std::string name;				// name of the set
 		float tileWidth, tileHeight;		// how big is a tile in the set

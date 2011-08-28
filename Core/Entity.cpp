@@ -1,10 +1,14 @@
-#include <cstdio>
 #include "Entity.h"
+
+#include <cstdio>
+#include <sstream>
+
 #include "Collision.h"
 #include "Graphics.h"
+#include "GraphicFactory.h"
 #include "FileNode.h"
 #include "MonocleToolkit.h"
-#include <sstream>
+
 
 namespace Monocle
 {
@@ -45,8 +49,18 @@ namespace Monocle
 
 	///=====
 
-	Entity::Entity(const Entity &entity)
-		: Transform(entity), isEnabled(true), followCamera(entity.followCamera), scene(NULL), collider(NULL), graphic(NULL), parent(NULL), depth(entity.depth), isVisible(entity.isVisible), color(entity.color), layer(entity.layer)//, tags(entity.tags)
+	Entity::Entity(const Entity &entity):
+        Transform(entity),
+        isEnabled(true),
+        followCamera(entity.followCamera),
+        scene(NULL),
+        collider(NULL),
+        graphic(NULL),
+        parent(NULL),
+        depth(entity.depth),
+        isVisible(entity.isVisible),
+        color(entity.color),
+        layer(entity.layer)
 	{
         lastPositionWhenCached = Vector2(-666.6666,-666.6666);
         cachedWorldPosition = Vector2::zero;
@@ -58,9 +72,18 @@ namespace Monocle
 		}
 	}
 
-	Entity::Entity()
-		: Transform(), isEnabled(true), scene(NULL), collider(NULL), graphic(NULL), parent(NULL), layer(0), depth(0.0f), color(Color::white), isVisible(true)
-		//, willDie(false)
+	Entity::Entity():
+        Transform(),
+        isEnabled(true),
+        scene(NULL),
+        collider(NULL),
+        graphic(NULL),
+        parent(NULL),
+        layer(0),
+        depth(0.0f),
+        color(Color::white),
+        isVisible(true)
+        //, willDie(false)
 	{
         lastPositionWhenCached = Vector2(-666.6666,-666.6666);
         cachedWorldPosition = Vector2::zero;
@@ -70,6 +93,7 @@ namespace Monocle
 	{
 	}
 
+    
 	Entity *Entity::Clone()
 	{
 		Debug::Log("Entity::Clone()");
@@ -122,10 +146,12 @@ namespace Monocle
 
 	void Entity::Update()
 	{
-		//for(std::list<Entity*>::iterator i = children.begin(); i != children.end(); ++i)
-		//{
-		//	(*i)->Update();
-		//}
+        ChildrenType::iterator childrenIter = children.begin();
+        ChildrenType::iterator childrenEnd = children.end();
+        for (; childrenIter != childrenEnd; ++childrenIter)
+		{
+			(*childrenIter)->Update();
+		}
 
 		// clean up invokes
 		for(std::list<InvokeData*>::iterator i = invokes.begin(); i != invokes.end(); ++i)
@@ -166,6 +192,14 @@ namespace Monocle
 		isEnabled = false;
 	}
 
+    void Entity::ToggleEnabled()
+    {
+        if (isEnabled)
+            Disable();
+        else
+            Enable();
+    }
+
 	bool Entity::IsEnabled()
 	{
 		return isEnabled;
@@ -197,14 +231,24 @@ namespace Monocle
 
 		MatrixChain();
 
+        Graphics::SetColor(color);
+        
 		if (graphic != NULL)
 		{
-			Graphics::SetColor(color);
 			graphic->Render(this);
+		}
+        
+        // Render children
+        ChildrenType::iterator childrenIter = children.begin();
+        ChildrenType::iterator childrenEnd = children.end();
+        for (; childrenIter != childrenEnd; ++childrenIter)
+		{
+			(*childrenIter)->Render();
 		}
         
         Graphics::PopMatrix();
 		
+        
 		if (Debug::showBounds && IsDebugLayer())
 		{
 			Vector2 offset;
@@ -333,21 +377,29 @@ namespace Monocle
 
 		return layer > Debug::layerMin && layer < Debug::layerMax;
 	}
+    
+	// TODO: enqueue for safety
+	// add an entity as a child
+	void Entity::AddChild(Entity *entity)
+	{
+		entity->parent = this;
+		children.push_back(entity);
+	}
 
-	/////TODO: enqueue for safety
-	//// add an entity as a child
-	//void Entity::Add(Entity *entity)
-	//{
-	//	entity->parent = this;
-	//	children.push_back(entity);
-	//}
-
-	/////TODO: enqueue for safety
-	//void Entity::Remove(Entity *entity)
-	//{
-	//	entity->parent = NULL;
-	//	children.remove(entity);
-	//}
+	// TODO: enqueue for safety
+	void Entity::RemoveChild(Entity *entity)
+	{
+		entity->parent = NULL;
+        ChildrenType::iterator iter = children.begin();
+        for (; iter != children.end(); ++iter)
+        {
+            if (*iter == entity)
+            {
+                children.erase(iter);
+                break;
+            }
+        }
+	}
 
 	void Entity::SetCollider(Collider *setCollider)
 	{
@@ -603,10 +655,13 @@ namespace Monocle
 	{
 		Transform::Load(fileNode);
 
-		int newLayer =0;
+		int newLayer = 0;
 		fileNode->Read("layer", newLayer);
 		SetLayer(newLayer);
+        
 		fileNode->Read("color", color);
+        this->color = color;
+        
 		std::string tags;
 		fileNode->Read("tags", tags);
 		if (tags.size() > 0)
@@ -618,7 +673,27 @@ namespace Monocle
 				AddTag(tag, true);
 			}
 		}
+        
 		fileNode->Read("followCamera", followCamera);
+        this->followCamera = followCamera;
+        
+        // Collider
+        FileNode* colliderNode = fileNode->FirstChildNode("Collider");
+		if (colliderNode)
+		{
+            Collider* collider = Collider::Create(colliderNode);
+            if (collider)
+                SetCollider(collider);
+		}
+        
+        // Graphic
+        FileNode* graphicNode = fileNode->FirstChildNode("Graphic");
+		if (graphicNode)
+		{
+            Graphic* graphic = GraphicFactory::Create(graphicNode);
+            if (graphic)
+                SetGraphic(graphic);
+		}
 	}
 
 	void Entity::SetParent(Entity *parent)

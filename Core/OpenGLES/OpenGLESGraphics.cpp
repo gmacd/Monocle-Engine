@@ -49,7 +49,7 @@ namespace Monocle
         currentBlend = BLEND_NONE;
 	}
     
-	void Graphics::Init()
+	void Graphics::Init(int w, int h)
 	{
 		Debug::Log("Graphics::Init");
 		
@@ -85,7 +85,7 @@ namespace Monocle
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         
-		Set2D(800,600);
+		Set2D(w, h);
         
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -640,7 +640,7 @@ namespace Monocle
 		}
 	}
     
-    void Graphics::BindFont(FontAsset* fontAsset)
+    void Graphics::BindFont(const FontAsset* fontAsset)
 	{
 		if (fontAsset != NULL)
 		{

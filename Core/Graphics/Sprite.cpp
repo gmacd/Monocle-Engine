@@ -6,20 +6,13 @@ namespace Monocle
 {
 
 	Sprite::Sprite(const std::string &filename, FilterType filter, float width, float height)
-		: Graphic(),
-		texture(NULL),
-		shader(NULL),
-		width(width),
-		height(height),
-		textureOffset(Vector2::zero),
-        textureScale(Vector2::one),
-        textureOffsetModifier(Vector2::zero),
-        textureScaleModifier(Vector2::one),
-        trimOffset(Vector2::zero),
-        trimScale(Vector2::one),
-        renderOffset(Vector2::zero),
-		blend(BLEND_ALPHA)
+		: Graphic()
 	{
+        Init();
+        
+        this->width = width;
+        this->height = height;
+        
 		texture = Assets::RequestTexture(filename, filter);
 		if (texture != NULL)
 		{
@@ -32,20 +25,13 @@ namespace Monocle
 	}
 
 	Sprite::Sprite(const std::string &filename, float width, float height)
-		: Graphic(),
-		texture(NULL),
-		shader(NULL),
-		width(width),
-		height(height),
-		textureOffset(Vector2::zero),
-        textureScale(Vector2::one),
-        textureOffsetModifier(Vector2::zero),
-        textureScaleModifier(Vector2::one),
-        trimOffset(Vector2::zero),
-        trimScale(Vector2::one),
-        renderOffset(Vector2::zero),
-		blend(BLEND_ALPHA)
+		: Graphic()
 	{
+        Init();
+        
+        this->width = width;
+        this->height = height;
+        
 		texture = Assets::RequestTexture(filename);
 		if (texture != NULL)
 		{
@@ -58,20 +44,13 @@ namespace Monocle
 	}
     
     Sprite::Sprite(ZwopSprite *zwopSprite, FilterType filter, float width, float height)
-        : Graphic(),
-        texture(NULL),
-        shader(NULL),
-        width(width),
-        height(height),
-        textureOffset(Vector2::zero),
-        textureScale(Vector2::one),
-        textureOffsetModifier(Vector2::zero),
-        textureScaleModifier(Vector2::one),
-        trimOffset(Vector2::zero),
-        trimScale(Vector2::one),
-        renderOffset(Vector2::zero),
-        blend(BLEND_ALPHA)
+        : Graphic()
     {
+        Init();
+        
+        this->width = width;
+        this->height = height;
+        
         texture = Assets::RequestTexture( zwopSprite->GetSheet()->GetTextureName(), filter );
         if (width == -1.0 || height == -1.0)
         {
@@ -83,20 +62,13 @@ namespace Monocle
     }
     
     Sprite::Sprite(ZwopSprite *zwopSprite, float width, float height)
-    : Graphic(),
-        texture(NULL),
-        shader(NULL),
-        width(width),
-        height(height),
-        textureOffset(Vector2::zero),
-        textureScale(Vector2::one),
-        textureOffsetModifier(Vector2::zero),
-        textureScaleModifier(Vector2::one),
-        trimOffset(Vector2::zero),
-        trimScale(Vector2::one),
-        renderOffset(Vector2::zero),
-        blend(BLEND_ALPHA)
+        : Graphic()
     {
+        Init();
+        
+        this->width = width;
+        this->height = height;
+        
         texture = Assets::RequestTexture( zwopSprite->GetSheet()->GetTextureName() );
         if (width == -1.0 || height == -1.0)
         {
@@ -108,21 +80,35 @@ namespace Monocle
     }
 
 	Sprite::Sprite()
-		: Graphic(),
-		texture(NULL),
-		shader(NULL),
-		width(1.0f),
-		height(1.0f),
-		textureOffset(Vector2::zero),
-        textureScale(Vector2::one),
-        textureOffsetModifier(Vector2::zero),
-        textureScaleModifier(Vector2::one),
-        trimOffset(Vector2::zero),
-        trimScale(Vector2::one),
-        renderOffset(Vector2::zero),
-		blend(BLEND_ALPHA)
+		: Graphic()
 	{
+        Init();
 	}
+
+    Sprite::Sprite(FileNode* node)
+    {
+        Init();
+        
+        std::string filename, filterType;
+        node->Read("filename", filename);
+        node->Read("filter", filterType);
+        node->Read("width", width);
+        node->Read("height", height);
+        
+        FilterType filter = FILTER_NONE;
+        if (filterType == "linear")
+            filter = FILTER_LINEAR;
+        
+        texture = Assets::RequestTexture(filename, filter);
+		if (texture)
+		{
+			if ((width == -1.0) || (height == -1.0))
+			{
+				width = texture->width;
+				height = texture->height;
+			}
+		}
+    }
 
 	Sprite::~Sprite()
 	{
@@ -131,12 +117,29 @@ namespace Monocle
 			texture->RemoveReference();
 			texture = NULL;
 		}
-		if(shader != NULL)
+		if (shader != NULL)
 		{
 			delete shader;
 			shader = NULL;
 		}
 	}
+    
+    
+    void Sprite::Init()
+    {
+        texture = NULL;
+		shader = NULL;
+		width = 1.0f;
+		height = 1.0f;
+		textureOffset = Vector2::zero;
+        textureScale = Vector2::one;
+        textureOffsetModifier = Vector2::zero;
+        textureScaleModifier = Vector2::one;
+        trimOffset = Vector2::zero;
+        trimScale = Vector2::one;
+        renderOffset = Vector2::zero;
+		blend = BLEND_ALPHA;
+    }
     
     void Sprite::AdjustForZwopSprite( ZwopSprite *zs )
     {

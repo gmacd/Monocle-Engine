@@ -25,7 +25,7 @@ namespace Monocle
 		platform.Init(name, w, h, bits, fullscreen);
 		assets.Init();
 		input.Init();
-		graphics.Init();
+		graphics.Init(w, h);
 		collision.Init();
 		audio.Init();
 		level.Init();

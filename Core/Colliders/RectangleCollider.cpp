@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#include "FileNode.h"
+
+
 namespace Monocle
 {
 	//Note: collision is centered
@@ -9,17 +12,24 @@ namespace Monocle
 	// unless you set an offset (position)
 
 	RectangleCollider::RectangleCollider(float width, float height, Vector2 offset)
-		: Collider()
+		: Collider(CT_RECT)
 	{
 		this->offset	= offset;
 		this->width		= width;
 		this->height	= height;
 	}
-
-	ColliderType RectangleCollider::GetColliderType()
-	{
-		return CT_RECT;
-	}
+    
+    RectangleCollider::RectangleCollider(FileNode* node)
+        : Collider(CT_RECT)
+    {
+        width = 0;
+        height = 0;
+        offset = Vector2::zero;
+        node->Read("width", width);
+        node->Read("height", height);
+        node->Read("offset", offset);
+    }
+    
 
 	bool RectangleCollider::IntersectsPoint(const Vector2& point, CollisionData *collisionData)
 	{

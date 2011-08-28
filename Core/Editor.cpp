@@ -8,11 +8,12 @@
 
 namespace Monocle
 {
-
 	Editor::Editor() : Entity()
 	{
 		// set layer on top of foreground selectable layer (i.e. avoid having this entity be considered for selection)
-		SetLayer(Debug::layerMin - 1);
+        // Graham - removing because means debug info not drawn for this or
+        // for child entities
+		//SetLayer(Debug::layerMin - 1);
 	}
 
 	// update the camera controls
