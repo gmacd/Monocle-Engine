@@ -445,6 +445,10 @@ namespace Monocle
             localKeymap[local] = global;
         }
     }
+
+    void Platform::SetShowMouseCursor(bool show)
+    {
+    }
 }
 
 #endif
