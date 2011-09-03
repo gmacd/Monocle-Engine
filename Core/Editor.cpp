@@ -10,6 +10,7 @@ namespace Monocle
 {
 	Editor::Editor() : Entity()
 	{
+        // set layer on top of foreground selectable layer (i.e. avoid having this entity be considered for selection)
 		SetLayer(Debug::layerMin - 1);
 	}
 
