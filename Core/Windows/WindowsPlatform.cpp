@@ -720,6 +720,10 @@ namespace Monocle
         fprintf(stderr,"EXCEPTION: %s\n",msg.c_str());
         exit(1);
     }
+    
+    void Platform::SetShowMouseCursor(bool show)
+    {
+    }
 }
 
 #endif

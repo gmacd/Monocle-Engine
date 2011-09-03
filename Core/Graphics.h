@@ -118,7 +118,7 @@ namespace Monocle
 		//!		A uniform scale of one means that the bottom right hand corner will recieve the texture coordinates (textureOffset + width, textureOffset + height)
 		//!	\param offset [in] The offset from the current renderer location to render the quad
 		//! \sa RenderQuadCustom
-		static void RenderQuad(float width, float height, const Vector2 &textureOffset=Vector2::zero, const Vector2 &textureScale=Vector2::one, const Vector2 &offset=Vector2::zero);
+		static void RenderQuad(float width, float height, const Vector2 &textureOffset=Vector2::zero, const Vector2 &textureScale=Vector2::one, const Vector2 &position=Vector2::zero);
         
 		//! \brief Renders a quad with caller-defined corner points.
 		//! \param ul [in] The upper left corner position

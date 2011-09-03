@@ -35,9 +35,11 @@ namespace Monocle
             // Border
             Graphics::Translate(position);
             Graphics::BindTexture(NULL);
+            
             Graphics::SetColor(Color::orange);
-            Graphics::RenderLineRect(Vector2::zero, 18, 18);
-
+            Graphics::RenderQuad(18, 18, Vector2::zero, Vector2::one, Vector2(9, 9));
+            
+            Graphics::SetColor(Color::white);
             tileset->RenderTile(tileID, Vector2(9, 9));
 
             Graphics::PopMatrix();
@@ -47,7 +49,7 @@ namespace Monocle
     void TilemapEditorCursor::NextTile()
     {
         tileID++;
-        if (tileID >= 2)
+        if (tileID >= tileset->numTiles)
             tileID = 0;
     }
     
@@ -55,7 +57,7 @@ namespace Monocle
     {
         tileID--;
         if (tileID < 0)
-            tileID = 1;
+            tileID = tileset->numTiles - 1;
     }
 
     

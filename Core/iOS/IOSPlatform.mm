@@ -193,6 +193,10 @@ namespace Monocle
                                                     encoding:[NSString defaultCStringEncoding]];
         [NSException raise:errorMessage format:@"%s" , errorMessage];
     }
+    
+    void Platform::SetShowMouseCursor(bool show)
+    {
+    }
 }
 
 #endif

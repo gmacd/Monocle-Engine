@@ -6,8 +6,8 @@
 
 namespace Monocle
 {
-	Tileset::Tileset(const std::string &name, const std::string &filename, float tileWidth, float tileHeight)
-		: texture(NULL), tileWidth(tileWidth), tileHeight(tileHeight), name(name)
+	Tileset::Tileset(const std::string &name, const std::string &filename, float tileWidth, float tileHeight, int numTiles)
+		: texture(NULL), tileWidth(tileWidth), tileHeight(tileHeight), name(name), numTiles(numTiles)
 	{
 		texture = Assets::RequestTexture(filename, FILTER_NONE);
 	}
@@ -20,7 +20,7 @@ namespace Monocle
         int tilesPerRow = texture->width / tileWidth;
         
         //printf("%d, %d = %d", tx, ty, tileID);
-        if (tileID != -1)
+        if ((tileID >= 0) && (tileID < numTiles))
         {
             //printf("%d, %d = %d", tx, ty, tileID);
             

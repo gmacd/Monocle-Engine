@@ -63,9 +63,6 @@ namespace Monocle
 
 		Set2D(w, h);
         
-        glEnableClientState(GL_VERTEX_ARRAY);
-        //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
 		//cameraPosition = screenCenter;
 		//cameraZoom = Vector2::one;
 	}
@@ -135,6 +132,9 @@ namespace Monocle
         
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+        
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		//instance->resolutionScale = Vector2(float(Platform::GetWidth())/virtualWidth, float(Platform::GetHeight())/virtualHeight);
 
@@ -355,28 +355,27 @@ namespace Monocle
 		glEnd();
 	}
 
-	void Graphics::RenderQuad(float width, float height, const Vector2 &textureOffset, const Vector2 &textureScale, const Vector2 &offset)
+	void Graphics::RenderQuad(float width, float height, const Vector2 &textureOffset, const Vector2 &textureScale, const Vector2 &position)
 	{
-		float halfWidth = width*0.5f;
-		float halfHeight = height*0.5f;
+        float halfWidth = width * 0.5f, halfHeight = height * 0.5f;
 
-		glBegin(GL_QUADS);
-			// UL
-			glTexCoord2f(textureOffset.x, textureOffset.y);
-			glVertex3f(-halfWidth + offset.x, -halfHeight + offset.y, 0.0f);
-			
-			//UR
-			glTexCoord2f(textureOffset.x + textureScale.x, textureOffset.y);
-			glVertex3f(halfWidth + offset.x, -halfHeight + offset.y, 0.0f);
-			
-			//LR
-			glTexCoord2f(textureOffset.x + textureScale.x, textureOffset.y + textureScale.y);
-			glVertex3f(halfWidth + offset.x, halfHeight + offset.y, 0.0f);
-			
-			//LL
-			glTexCoord2f(textureOffset.x, textureOffset.y + textureScale.y);
-			glVertex3f(-halfWidth + offset.x, halfHeight + offset.y, 0.0f);
-		glEnd();
+        GLfloat vertex_arr[8] = {
+            position.x - halfWidth, position.y - halfHeight,
+            position.x + halfWidth, position.y - halfHeight,
+            position.x - halfWidth, position.y + halfHeight,
+            position.x + halfWidth, position.y + halfHeight,
+        };
+        
+        GLfloat texture_arr[8] = {
+            textureOffset.x,                  textureOffset.y,
+            textureOffset.x + textureScale.x, textureOffset.y,
+            textureOffset.x,                  textureOffset.y + textureScale.y,
+            textureOffset.x + textureScale.x, textureOffset.y + textureScale.y
+        };
+        
+        glVertexPointer(2, GL_FLOAT, 0, vertex_arr);
+        glTexCoordPointer(2, GL_FLOAT, 0, texture_arr);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
     
     void Graphics::RenderText(const FontAsset& font, const std::string& text, float x, float y, TextAlign x_align)

@@ -88,7 +88,11 @@ namespace Monocle
 					TiXmlElement* eTileset = eTilesets->FirstChildElement("Tileset");
 					while (eTileset)
 					{
-						instance->tilesets.push_back(new Tileset(XMLReadString(eTileset, "name"), XMLReadString(eTileset, "image"), XMLReadInt(eTileset, "tileWidth"), XMLReadInt(eTileset, "tileHeight")));
+						instance->tilesets.push_back(new Tileset(XMLReadString(eTileset, "name"),
+                                                                 XMLReadString(eTileset, "image"),
+                                                                 XMLReadInt(eTileset, "tileWidth"),
+                                                                 XMLReadInt(eTileset, "tileHeight"),
+                                                                 XMLReadInt(eTileset, "numTiles")));
                         instance->currentTileset = instance->tilesets.back();
 
 						eTileset = eTilesets->NextSiblingElement("Tileset");
