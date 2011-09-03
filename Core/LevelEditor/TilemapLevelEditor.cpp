@@ -36,9 +36,9 @@ namespace Monocle
             Graphics::Translate(position);
             Graphics::BindTexture(NULL);
             Graphics::SetColor(Color::orange);
-            Graphics::RenderLineRect(0, 0, 18, 18);
+            Graphics::RenderLineRect(Vector2::zero, 18, 18);
 
-            tileset->RenderTile(tileID, Vector2(1, 1));
+            tileset->RenderTile(tileID, Vector2(9, 9));
 
             Graphics::PopMatrix();
         }

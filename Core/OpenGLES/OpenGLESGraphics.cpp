@@ -344,38 +344,33 @@ namespace Monocle
         glDrawArrays(GL_LINES, 0, 2);
 	}
     
-	void Graphics::RenderLineRect(float x, float y, float w, float h)
+	void Graphics::RenderLineRect(const Vector2& position, float w, float h)
 	{
-		float hw = w*0.5f;
-		float hh = h*0.5f;
-        
-        GLfloat vertex_arr[16] = {
-            x-hw, y-hh,
-            x+hw, y-hh,
-            x+hw, y-hh,
-            x+hw, y+hh,
-            x+hw, y+hh,
-            x-hw, y+hh,
-            x-hw, y+hh,
-            x-hw, y-hh
+        GLfloat vertex_arr[8] = {
+            position.x,     position.y,
+            position.x + w, position.y,
+            position.x + w, position.y + h,
+            position.x,     position.y + h,
         };
         
         glVertexPointer(2, GL_FLOAT, 0, vertex_arr);
-        glDrawArrays(GL_LINES, 0, 8);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+	}
+    
+	void Graphics::RenderLineRectCentered(const Vector2& position, float w, float h)
+	{
+        float halfWidth = w * 0.5f, halfHeight = h * 0.5f;
         
-		/*glBegin(GL_LINES);
-        glVertex3f(x-hw, y-hh, 0.0f);
-        glVertex3f(x+hw, y-hh, 0.0f);
+        GLfloat vertex_arr[8] = {
+            position.x - halfWidth, position.y - halfHeight,
+            position.x + halfWidth, position.y - halfHeight,
+            position.x + halfWidth, position.y + halfHeight,
+            position.x - halfWidth, position.y + halfHeight,
+        };
         
-        glVertex3f(x+hw, y-hh, 0.0f);
-        glVertex3f(x+hw, y+hh, 0.0f);
-        
-        glVertex3f(x+hw, y+hh, 0.0f);
-        glVertex3f(x-hw, y+hh, 0.0f);
-        
-        glVertex3f(x-hw, y+hh, 0.0f);
-        glVertex3f(x-hw, y-hh, 0.0f);
-		glEnd();*/
+        glVertexPointer(2, GL_FLOAT, 0, vertex_arr);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+
 	}
     
 	void Graphics::SetColor(const Color &color)

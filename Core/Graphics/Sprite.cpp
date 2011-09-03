@@ -226,7 +226,7 @@ namespace Monocle
 				Graphics::SetColor(Color(0.9f,0.9f,1.0f,0.25f));
 
 			Graphics::BindTexture(NULL);
-			Graphics::RenderLineRect(0, 0, width, height);
+			Graphics::RenderLineRectCentered(Vector2::zero, width, height);
 
 			if (Debug::selectedEntity != entity)
 			{

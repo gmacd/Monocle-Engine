@@ -276,13 +276,13 @@ namespace Monocle
 			Vector2 worldPosition = GetWorldPosition();
 
 			//draw the control point
-			Graphics::RenderLineRect(worldPosition.x, worldPosition.y, ENTITY_CONTROLPOINT_SIZE, ENTITY_CONTROLPOINT_SIZE);
+			Graphics::RenderLineRectCentered(worldPosition, ENTITY_CONTROLPOINT_SIZE, ENTITY_CONTROLPOINT_SIZE);
             
 			if (Debug::selectedEntity != this)
 				Graphics::SetColor(Color(0.0f,0.0f,0.25f,0.8f));
             
 			// draw the control point center
-			Graphics::RenderLineRect(worldPosition.x, worldPosition.y, ENTITY_CONTROLPOINT_SIZE * 0.75f, ENTITY_CONTROLPOINT_SIZE * 0.75f);
+			Graphics::RenderLineRectCentered(worldPosition, ENTITY_CONTROLPOINT_SIZE * 0.75f, ENTITY_CONTROLPOINT_SIZE * 0.75f);
             
 			Graphics::PopMatrix();
 		}

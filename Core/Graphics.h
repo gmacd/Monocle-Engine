@@ -106,7 +106,9 @@ namespace Monocle
 		//! Renders a triangle (points at 0, 4, and 8 o'clock) at the renderer's current position
 		//! \param size [in] The size of each side of the bounding square of the rendered triangle.
 		static void RenderTriangle(float size);
+        
 		//static void RenderQuad(float size);
+        
 		//! \brief Renders a quad at the renderer's position
 		//! This function renders a quad where the renderer's position is the center of the quad when not passed an offset in the position parameter.
 		//! \param width [in] The width of the quad to render
@@ -114,9 +116,10 @@ namespace Monocle
 		//! \param textureOffset [in] A vector indicating the position on the texture (if set) that corresponds to the upper left corner of the quad
 		//! \param textureScale [in] A vector indicating the scale on the x and y axes which determines how much of the texture to map to the quad.
 		//!		A uniform scale of one means that the bottom right hand corner will recieve the texture coordinates (textureOffset + width, textureOffset + height)
-		//!	\param position [in] The offset from the current renderer location to render the quad
+		//!	\param offset [in] The offset from the current renderer location to render the quad
 		//! \sa RenderQuadCustom
-		static void RenderQuad(float width, float height, const Vector2 &textureOffset=Vector2::zero, const Vector2 &textureScale=Vector2::one, const Vector2 &position=Vector2::zero);
+		static void RenderQuad(float width, float height, const Vector2 &textureOffset=Vector2::zero, const Vector2 &textureScale=Vector2::one, const Vector2 &offset=Vector2::zero);
+        
 		//! \brief Renders a quad with caller-defined corner points.
 		//! \param ul [in] The upper left corner position
 		//! \param ur [in] The upper right corner position
@@ -126,6 +129,7 @@ namespace Monocle
 		//! \param textureScale [in] A vector indicating the scale on the x and y axes which determines how much of the texture to map to the quad.
 		//! \sa RenderQuad
 		static void RenderQuadCustom(const Vector2 &ul, const Vector2 &ur, const Vector2 &lr, const Vector2 &ll, const Vector2 &textureOffset, const Vector2 &textureScale);
+        
         //! \brief Renders the given text with the given font at the given position.
 		//! \param font [in] The font to use to render
 		//! \param text [in] The text to render
@@ -133,9 +137,15 @@ namespace Monocle
 		//! \param y [int] The y coordinate of the origin of the text
 		//! \sa FontAsset
 		static void RenderText(const FontAsset& font, const std::string& text, float x, float y, TextAlign x_align = TEXTALIGN_LEFT);
+        
 		//! \brief Renders a wireframe quad
-		//! \sa RenderQuad
-		static void RenderLineRect(float x, float y, float w, float h);
+		//! \sa RenderQuad, RenderLineRectCentered
+		static void RenderLineRect(const Vector2& position, float w, float h);
+        
+		//! \brief Renders a wireframe quad, centred on position
+		//! \sa RenderQuad, RenderLineRect
+        static void RenderLineRectCentered(const Vector2& position, float w, float h);
+        
 		//! \brief Renders a line
 		//! \param pos1 [in] The start position of the line
 		//! \param pos2 [in] The end position of the line

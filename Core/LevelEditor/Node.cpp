@@ -109,7 +109,7 @@ namespace Monocle
 
 
 			Vector2 pos = GetWorldPosition();
-			Graphics::RenderLineRect(pos.x, pos.y, 64, 64);
+			Graphics::RenderLineRectCentered(pos, 64, 64);
 			if (next)
 			{
 				Vector2 nextPos = next->GetWorldPosition();

@@ -33,8 +33,8 @@ namespace Monocle
 		//Graphics::RenderQuad(50, 50);
 		Graphics::SetColor(color);
 		Graphics::Rotate(Monocle::timeSinceStart * 180, 0, 0, 1);
-		Graphics::RenderLineRect(0, 0, 10,10);
-		Graphics::RenderLineRect(0, 0, 2,2);
+		Graphics::RenderLineRectCentered(Vector2(0, 0), 10,10);
+		Graphics::RenderLineRectCentered(Vector2(0, 0), 2,2);
 	}
 	*/
 

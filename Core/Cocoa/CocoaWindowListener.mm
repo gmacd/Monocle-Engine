@@ -80,6 +80,14 @@ static __inline__ void ConvertNSRect(NSRect *r)
 	return NO;
 }
 
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+}
+
+- (void)windowDidResignKey:(NSNotification *)aNotification
+{
+}
+
 - (void)windowDidResize:(NSNotification *)aNotification
 {
 	int w, h;
@@ -131,39 +139,60 @@ static __inline__ void ConvertNSRect(NSRect *r)
 
 - (void)mouseEntered:(NSEvent *)theEvent
 {
-	// XXX focus window, hide mouse cursor
+    if ([_data->nswindow isKeyWindow])
+    {
+        if (!CocoaPlatform::platform->ShowMouseCursor())
+        {
+            CGDisplayHideCursor(kCGDirectMainDisplay);
+        }
+    }
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	// XXX release focus, show mouse cursor
+    if ([_data->nswindow isKeyWindow])
+    {
+        CGDisplayShowCursor(kCGDirectMainDisplay);
+    }
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
 {
-	NSPoint point;
-	int x, y;
-
-    //  Window width and height
-    int ww, wh;
-    ww = CocoaPlatform::platform->GetWidth();
-    wh = CocoaPlatform::platform->GetHeight();
+    // Window width and height
+    float windowWidth = (float)CocoaPlatform::platform->GetWidth();
+    float windowHeight = (float)CocoaPlatform::platform->GetHeight();
     
-	point = [theEvent locationInWindow];
-	x = (int)point.x;
-	y = (int)(wh - point.y);
+    Vector2& position = CocoaPlatform::instance->mouseScreenPosition;
+    Vector2& previousPosition = CocoaPlatform::instance->mouseScreenPreviousPosition;
+    
+    // Update previous position
+    previousPosition = position;
+    
+    // Get new position (with inverted y-axis)
+    position.x = [theEvent locationInWindow].x;
+    position.y = (windowHeight - [theEvent locationInWindow].y);
+    
+    BOOL pointInsideWindow = ((position.x >= 0) && (position.x < windowWidth)
+                              && (position.y >= 0) && (position.y < windowHeight));
+    BOOL previousPointInsideWindow = ((previousPosition.x >= 0) && (previousPosition.x < windowWidth)
+                                      && (previousPosition.y >= 0) && (previousPosition.y < windowHeight));
 
-	if (x < 0 || x >= ww || y < 0 || y >= wh) {
-		// if (SDL_GetMouseFocus() == window) {
-		//     [self mouseExited:theEvent];
-		// }
-	} else {
-		// if (SDL_GetMouseFocus() != window) {
-		//     [self mouseEntered:theEvent];
-		// }
-		Vector2& mousePos = CocoaPlatform::platform->mousePosition;
-		mousePos.x = x;
-		mousePos.y = y;
+	if (!pointInsideWindow && previousPointInsideWindow)
+    {
+        // Outside window - triggered once on transition from inside to out
+        [self mouseExited:theEvent];
+	}
+    
+    if (pointInsideWindow)
+    {
+        // Inside window
+        CocoaPlatform::platform->mousePosition = position;
+        
+        if (!previousPointInsideWindow)
+        {
+            // Inside window - triggered once on transition from inside to out
+            [self mouseEntered:theEvent];
+        }
 	}
 }
 

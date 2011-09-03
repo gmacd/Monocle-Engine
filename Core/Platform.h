@@ -171,8 +171,8 @@ namespace Monocle
         int touched;
 	};
 
-	// add an option to automatically use touches as "mouse position" and "mouse buttons"
     
+	// add an option to automatically use touches as "mouse position" and "mouse buttons"
     enum PlatformOrientation
     {
         PLATFORM_ORIENTATION_LANDSCAPE_LEFT,
@@ -184,6 +184,7 @@ namespace Monocle
         
         PLATFORM_ORIENTATION_COUNT
     };
+
     
 #define MONOCLE_DETECT_COLOR_DEPTH	-1
 
@@ -225,12 +226,20 @@ namespace Monocle
         static std::string GetDefaultContentPath();
         
         static void ErrorShutdown( std::string msg = "" );
+        
+        static bool ShowMouseCursor() { return showMouseCursor; }
+        static void SetShowMouseCursor(bool show);
 
+    protected:
+        static bool showMouseCursor;
+        
 	private:
 		static Platform *instance;
+
 		int localKeymap[KEY_MAX];
 		int width, height;
         PlatformOrientation orientation;
+                
         void BindLocalKey(int local, int global);
 	};
 }

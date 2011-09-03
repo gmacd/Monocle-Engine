@@ -62,6 +62,9 @@ namespace Monocle
         glColor4f(1.0,1.0,1.0,1.0);
 
 		Set2D(w, h);
+        
+        glEnableClientState(GL_VERTEX_ARRAY);
+        //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		//cameraPosition = screenCenter;
 		//cameraZoom = Vector2::one;
@@ -128,8 +131,8 @@ namespace Monocle
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-
-		glOrtho(0.0f, Platform::GetWidth(), Platform::GetHeight(), 0.0f, -1.0, 1.0);
+		glOrtho(0.0f, Platform::GetWidth(), Platform::GetHeight(), 0.0f, -1.0f, 1.0f);
+        
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
@@ -158,15 +161,6 @@ namespace Monocle
 		}
 
 		glViewport(0,0,width,height);						// Reset The Current Viewport
-
-		glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-		glLoadIdentity();									// Reset The Projection Matrix
-
-		// Calculate The Aspect Ratio Of The Window
-		gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
-
-		glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-		glLoadIdentity();									// Reset The Modelview Matrix
 
 		Set2D(instance->virtualWidth,instance->virtualHeight);
 	}
@@ -289,24 +283,32 @@ namespace Monocle
 		glEnd();
 	}
 
-	void Graphics::RenderLineRect(float x, float y, float w, float h)
+	void Graphics::RenderLineRect(const Vector2& position, float w, float h)
 	{
-		float hw = w*0.5f;
-		float hh = h*0.5f;
-
-		glBegin(GL_LINES);
-			glVertex3f(x-hw, y-hh, 0.0f);
-			glVertex3f(x+hw, y-hh, 0.0f);
-
-			glVertex3f(x+hw, y-hh, 0.0f);
-			glVertex3f(x+hw, y+hh, 0.0f);
-			
-			glVertex3f(x+hw, y+hh, 0.0f);
-			glVertex3f(x-hw, y+hh, 0.0f);
-
-			glVertex3f(x-hw, y+hh, 0.0f);
-			glVertex3f(x-hw, y-hh, 0.0f);
-		glEnd();
+        GLfloat vertex_arr[8] = {
+            position.x,     position.y,
+            position.x + w, position.y,
+            position.x + w, position.y + h,
+            position.x,     position.y + h,
+        };
+        
+        glVertexPointer(2, GL_FLOAT, 0, vertex_arr);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+	}
+    
+	void Graphics::RenderLineRectCentered(const Vector2& position, float w, float h)
+	{
+        float halfWidth = w * 0.5f, halfHeight = h * 0.5f;
+        
+        GLfloat vertex_arr[8] = {
+            position.x - halfWidth, position.y - halfHeight,
+            position.x + halfWidth, position.y - halfHeight,
+            position.x + halfWidth, position.y + halfHeight,
+            position.x - halfWidth, position.y + halfHeight,
+        };
+        
+        glVertexPointer(2, GL_FLOAT, 0, vertex_arr);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
 	}
 
 	void Graphics::SetColor(const Color &color)
@@ -353,7 +355,7 @@ namespace Monocle
 		glEnd();
 	}
 
-	void Graphics::RenderQuad(float width, float height, const Vector2 &textureOffset, const Vector2 &textureScale, const Vector2 &position)
+	void Graphics::RenderQuad(float width, float height, const Vector2 &textureOffset, const Vector2 &textureScale, const Vector2 &offset)
 	{
 		float halfWidth = width*0.5f;
 		float halfHeight = height*0.5f;
@@ -361,19 +363,19 @@ namespace Monocle
 		glBegin(GL_QUADS);
 			// UL
 			glTexCoord2f(textureOffset.x, textureOffset.y);
-			glVertex3f(-halfWidth + position.x, -halfHeight + position.y, 0.0f);
+			glVertex3f(-halfWidth + offset.x, -halfHeight + offset.y, 0.0f);
 			
 			//UR
 			glTexCoord2f(textureOffset.x + textureScale.x, textureOffset.y);
-			glVertex3f(halfWidth + position.x, -halfHeight + position.y, 0.0f);
+			glVertex3f(halfWidth + offset.x, -halfHeight + offset.y, 0.0f);
 			
 			//LR
 			glTexCoord2f(textureOffset.x + textureScale.x, textureOffset.y + textureScale.y);
-			glVertex3f(halfWidth + position.x, halfHeight + position.y, 0.0f);
+			glVertex3f(halfWidth + offset.x, halfHeight + offset.y, 0.0f);
 			
 			//LL
 			glTexCoord2f(textureOffset.x, textureOffset.y + textureScale.y);
-			glVertex3f(-halfWidth + position.x, halfHeight + position.y, 0.0f);
+			glVertex3f(-halfWidth + offset.x, halfHeight + offset.y, 0.0f);
 		glEnd();
 	}
     

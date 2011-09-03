@@ -100,6 +100,9 @@ namespace Monocle
     
 	void CocoaPlatform::Init(const std::string &name, int w, int h, int bits, bool fullscreen)
 	{
+        mouseScreenPosition = Vector2(-99999, -99999);
+        mouseScreenPreviousPosition = Vector2(-99999, -99999);
+        
 		//  Init event loop
 		Cocoa_RegisterApp();
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];        
@@ -140,18 +143,24 @@ namespace Monocle
 			//CGConfigureDisplayWithDisplayMode (kCGDirectMainDisplay, CGDisplayBestModeForParameters (kCGDirectMainDisplay, 32, xRes, yRes, NULL) );						
 			//[glView enterFullScreenMode:[NSScreen mainScreen] withOptions:[NSDictionary dictionaryWithObjectsAndKeys:
 			//															   nil]];
-			
 		}
 	}
 
+    
 	Platform* Platform::instance;
+    
+    bool Platform::showMouseCursor = false;
+    
 	bool Platform::keys[KEY_MAX];
+    
 	bool Platform::mouseButtons[3];
-	Vector2 Platform::mousePosition;
+	Vector2 Platform::mousePosition;                    // Mouse position within window
 	int Platform::mouseScroll=0;
+    
     Touch Platform::touches[TOUCHES_MAX];
     int Platform::numTouches=0;
 
+    
 	Platform::Platform()
 	{
 		CocoaPlatform::instance = new CocoaPlatform();
@@ -270,7 +279,16 @@ namespace Monocle
     void Platform::ErrorShutdown( std::string msg )
     {
         NSString *errorMessage = [NSString stringWithCString:msg.c_str() 
-                                                    encoding:[NSString defaultCStringEncoding]];
+                                                    encoding: [NSString defaultCStringEncoding]];
         [NSException raise:errorMessage format:@"%s" , errorMessage];
+    }
+    
+    void Platform::SetShowMouseCursor(bool show)
+    {
+        showMouseCursor = show;
+        if (showMouseCursor && !CGCursorIsVisible())
+        {
+            CGDisplayShowCursor(kCGDirectMainDisplay);
+        }
     }
 }

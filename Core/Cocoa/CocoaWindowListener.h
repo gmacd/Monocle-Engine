@@ -17,6 +17,8 @@ typedef struct WindowData WindowData;
 
 /* Window delegate functionality */
 -(BOOL) windowShouldClose:(id) sender;
+-(void) windowDidBecomeKey:(NSNotification *) aNotification;
+-(void) windowDidResignKey:(NSNotification *) aNotification;
 -(void) windowDidResize:(NSNotification *) aNotification;
 
 /* Window event handling */
